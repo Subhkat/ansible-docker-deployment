@@ -1,0 +1,53 @@
+---
+- name: Install dnf plugins
+  dnf:
+    name: dnf-plugins-core
+    state: present
+
+- name: Add Docker CE Repository
+  command: >
+    dnf config-manager
+    --add-repo
+    https://download.docker.com/linux/centos/docker-ce.repo
+
+- name: Install Docker CE
+  dnf: 
+   name:
+     - docker-ce
+     - docker-ce-cli
+     - containerd.io
+   state: present
+
+- name: Start Docker Service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Install setuptoold
+  dnf:
+    name: python3-setuptools
+    state: present
+
+- name: Install pip
+  dnf:
+    name: python3-pip
+    state: present
+
+- name: Install Python Docker SDK
+  pip:
+    name: docker
+
+- name: Pull Nginx Image
+  community.docker.docker_image:
+    name: "{{ image_name }}"
+    source: pull
+
+- name: Run Nginx Container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "{{ image_name }}"
+    state: started
+    restart_policy: always
+    published_ports:
+      - "{{ container_port }}:80"

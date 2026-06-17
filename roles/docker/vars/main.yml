@@ -1,0 +1,9 @@
+---
+# vars file for roles/docker
+
+docker_packages:
+  - docker
+
+container_name: nginx_container
+image_name: nginx
+container_port: 8080
